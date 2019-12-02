@@ -76,6 +76,7 @@ public class JarLauncher {
 		Manifest manifest = null;
 		try {
 			manifest = jar.getManifest();
+			jar.close();
 		}
 		catch (final IOException e) {
 			// no action needed

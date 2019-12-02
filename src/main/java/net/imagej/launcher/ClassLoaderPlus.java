@@ -89,7 +89,9 @@ public class ClassLoaderPlus extends URLClassLoader {
 			final URL url = versioned.toURI().toURL();
 			if (result.contains(url)) return;
 			result.add(url);
-			final Manifest manifest = new JarFile(versioned).getManifest();
+			final JarFile jf=new JarFile(versioned);
+			final Manifest manifest = jf.getManifest();
+			jf.close();
 			if (manifest == null) return;
 			final String classPath = (String)manifest.getMainAttributes().get(Attributes.Name.CLASS_PATH);
 			if (classPath == null) return;

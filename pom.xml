@@ -5,22 +5,22 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>24.2.0</version>
+		<version>26.0.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>net.imagej</groupId>
 	<artifactId>imagej-launcher</artifactId>
-	<version>5.0.1-SNAPSHOT</version>
+	<version>5.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ImageJ Launcher</name>
 	<description>The executable which runs ImageJ. Its purpose is also to make sure that updates downloaded by the ImageJ Updater will be put into place before starting the Java Virtual Machine. It was formerly known as the Fiji launcher.</description>
-	<url>http://imagej.net/Launcher</url>
+	<url>https://imagej.net/Launcher</url>
 	<inceptionYear>2007</inceptionYear>
 	<organization>
 		<name>ImageJ</name>
-		<url>http://imagej.net/</url>
+		<url>https://imagej.net/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -33,7 +33,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>lead</role>
 				<role>developer</role>
@@ -46,61 +46,59 @@
 		<developer>
 			<id>stelfrich</id>
 			<name>Stefan Helfrich</name>
-			<url>http://imagej.net/User:Stelfrich</url>
+			<url>https://imagej.net/User:Stelfrich</url>
 			<roles>
-				<role>developer</role>
 				<role>debugger</role>
 				<role>reviewer</role>
 				<role>support</role>
-				<role>maintainer</role>
 			</roles>
 		</developer>
 	</developers>
 	<contributors>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<roles><role>founder</role></roles>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
 			<name>Ben Booth</name>
-			<url>http://imagej.net/User:Benwbooth</url>
+			<url>https://imagej.net/User:Benwbooth</url>
 			<properties><id>benwbooth</id></properties>
 		</contributor>
 		<contributor>
 			<name>Albert Cardona</name>
-			<url>http://imagej.net/User:Albertcardona</url>
+			<url>https://imagej.net/User:Albertcardona</url>
 			<properties><id>acardona</id></properties>
 		</contributor>
 		<contributor>
 			<name>Erwin Frise</name>
-			<url>http://imagej.net/User:Frise</url>
+			<url>https://imagej.net/User:Frise</url>
 			<properties><id>frederikfly</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/User:Hinerm</url>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Gregory Jefferis</name>
-			<url>http://imagej.net/User:Jefferis</url>
+			<url>https://imagej.net/User:Jefferis</url>
 			<properties><id>jefferis</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Longair</name>
-			<url>http://imagej.net/User:Mark</url>
+			<url>https://imagej.net/User:Mark</url>
 			<properties><id>mhl</id></properties>
 		</contributor>
 		<contributor>
 			<name>Josh Moore</name>
-			<url>http://imagej.net/User:Moore</url>
+			<url>https://imagej.net/User:Moore</url>
 			<properties><id>joshmoore</id></properties>
 		</contributor>
 		<contributor>
 			<name>Benjamin Schmid</name>
-			<url>http://imagej.net/User:Bene</url>
+			<url>https://imagej.net/User:Bene</url>
 			<properties><id>bene51</id></properties>
 		</contributor>
 	</contributors>
@@ -108,7 +106,7 @@
 	<mailingLists>
 		<mailingList>
 			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/</archive>
+			<archive>https://forum.image.sc/tags/imagej</archive>
 		</mailingList>
 	</mailingLists>
 
@@ -123,8 +121,8 @@
 		<url>https://github.com/imagej/imagej-launcher/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/ImageJ-launcher/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/imagej/imagej-launcher</url>
 	</ciManagement>
 
 	<properties>
@@ -145,8 +143,8 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<cmake.generator.option />
 		<make.binary>make</make.binary>
 
-		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
-		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+		<!-- NB: Deploy releases to the SciJava Maven repository. -->
+		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 	</properties>
 
 	<dependencies>
@@ -217,11 +215,10 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 						<configuration>
 							<target>
 								<exec executable="cmake" dir="${project.build.directory}" failonerror="true">
-									<arg line="${cmake.generator.option} ${basedir} -DTARGET_ARCHITECTURE=${target.architecture} 
-									-DDEBUG_OPTION=${debug.option}" />
+									<arg line="${cmake.generator.option} ${basedir} -DTARGET_ARCHITECTURE=${target.architecture} -DDEBUG_OPTION=${debug.option}" />
 								</exec>
 								<exec executable="${make.binary}" dir="${project.build.directory}" failonerror="true">
-									<arg line="VERBOSE=1"/>
+									<arg line="VERBOSE=1" />
 								</exec>
 							</target>
 						</configuration>

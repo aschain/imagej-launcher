@@ -34,7 +34,7 @@
  * startup of Java and ImageJ.
  *
  * This program was originally developed as the Fiji launcher
- * (http://fiji.sc/), but has been adapted and improved for use with ImageJ
+ * (https://fiji.sc/), but has been adapted and improved for use with ImageJ
  * core. It is also meant to be the default launcher of ImageJ 1.x.
  *
  * The ImageJ launcher is copyright 2007 - 2013 Johannes Schindelin, Mark
@@ -51,6 +51,7 @@
  * @author Benjamin Schmid
  * @author Gregory Jefferis
  * @author Curtis Rueden
+ * @author Ulrik Guenther
  */
 
 #define _BSD_SOURCE
@@ -75,6 +76,10 @@
 #include "platform.h"
 #include "string-funcs.h"
 #include "xalloc.h"
+
+#ifdef __linux__
+	void (*xinit_threads_reference)();
+#endif
 
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "net.imagej.Main";
@@ -1434,8 +1439,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 #ifdef WIN32
 		open_win_console();
 #endif
-		error("Fiji Build is deprecated! Please port your project to (Mini)Maven:\n"
-			"\n\thttp://fiji.sc/Maven");
+		error("Fiji Build is deprecated! Please port your project to Maven:\n"
+			"\n\thttps://imagej.net/Maven");
 		skip_class_launcher = 1;
 		headless = 1;
 		fake_jar = ij_path("jars/fake.jar");
@@ -2421,6 +2426,27 @@ int main(int argc, char **argv, char **e)
 	maybe_write_legacy_config();
 	if (!debug)
 		maybe_write_desktop_file();
+
+#ifdef __linux__
+	// This call is neccessary on Linux to avoid X11 errors when using
+	// various 3D graphics APIs like Vulkan or OpenGL.
+	if (!headless) {
+		void *libX11Handle = dlopen("libX11.so", RTLD_LAZY);
+		if(libX11Handle != NULL) {
+			if (debug)
+				error("Running XInitThreads\n");
+			xinit_threads_reference = dlsym(libX11Handle, "XInitThreads");
+
+			if(xinit_threads_reference != NULL) {
+				xinit_threads_reference();
+			} else {
+				error("Could not find XInitThreads in X11 library: %s\n", dlerror());
+			}
+		} else {
+			error("Could not find X11 library, not running XInitThreads.\n");
+		}
+	}
+#endif
 
 #ifdef __APPLE__
 	return start_ij_macosx(main_argv0);

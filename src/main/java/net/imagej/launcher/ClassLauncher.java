@@ -224,8 +224,12 @@ public class ClassLauncher {
 		@SuppressWarnings("unchecked")
 		final Class<Runnable> clazz =
 			(Class<Runnable>) classLoader.loadClass("fiji.IJ1Patcher");
-		final Runnable ij1Patcher = clazz.newInstance();
-		ij1Patcher.run();
+		try {
+			Runnable ij1Patcher = clazz.getDeclaredConstructor().newInstance();
+			ij1Patcher.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected static String[] slice(final String[] array, final int from) {
@@ -286,7 +290,7 @@ public class ClassLauncher {
 				"' does not have a main() method.");
 			System.exit(1);
 		}
-		Integer result = new Integer(1);
+		Integer result = Integer.valueOf(1);
 		try {
 			result = (Integer) mainMethod.invoke(null, new Object[] { arguments });
 		}

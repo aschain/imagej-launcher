@@ -134,7 +134,9 @@ Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<license.projectName>ImageJ software for multidimensional image processing and analysis.</license.projectName>
 
-		<scijava.jvm.version>11</scijava.jvm.version>
+		<!--  imagej-launcher.jar should be built with 1.8, but the icon changer needs the recent version -->
+		<scijava.jvm.build.version>[1.8.0-101,15.0.1]</scijava.jvm.build.version>
+		<scijava.jvm.version>12</scijava.jvm.version>
 
 		<target.architecture />
 		<debug.option />

@@ -2,9 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2007 - 2016 Board of Regents of the University of
- * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
- * Institute of Molecular Cell Biology and Genetics.
+ * Copyright (C) 2007 - 2020 ImageJ developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,14 +36,14 @@ void error(const char *fmt, ...)
 {
 	va_list ap;
 #ifdef WIN32
-	const char *debug = getenv("WINDEBUG");
-	if (debug && *debug) {
+	const char *windebug = getenv("WINDEBUG");
+	if (windebug && *windebug) {
 		va_start(ap, fmt);
 		win_verror(fmt, ap);
 		va_end(ap);
 		return;
 	}
-	open_win_console();
+	new_win_console();
 #endif
 
 	va_start(ap, fmt);
@@ -54,20 +52,56 @@ void error(const char *fmt, ...)
 	fputc('\n', stderr);
 }
 
+void enter(const char *func) {
+	debug("%s:", func);
+	debug_indent++;
+}
+
+void leave(void) {
+	debug_indent--;
+}
+
+__attribute__((format (printf, 1, 2)))
+void debug(const char *fmt, ...)
+{
+	if (!debug_mode) return;
+	va_list ap;
+#ifdef WIN32
+	const char *windebug = getenv("WINDEBUG");
+	if (windebug && *windebug) {
+		va_start(ap, fmt);
+		win_verror(fmt, ap);
+		va_end(ap);
+		return;
+	}
+	new_win_console();
+#endif
+
+	int i;
+	va_list nothing;
+	for (i=0; i<debug_indent; i++)
+		vfprintf(stderr, "    ", nothing);
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	fputc('\n', stderr);
+	fflush(stderr);
+}
+
 __attribute__((__noreturn__))
 __attribute__((format (printf, 1, 2)))
 void die(const char *fmt, ...)
 {
 	va_list ap;
 #ifdef WIN32
-	const char *debug = getenv("WINDEBUG");
-	if (debug && *debug) {
+	const char *windebug = getenv("WINDEBUG");
+	if (windebug && *windebug) {
 		va_start(ap, fmt);
 		win_verror(fmt, ap);
 		va_end(ap);
 		exit(1);
 	}
-	open_win_console();
+	new_win_console();
 #endif
 
 	va_start(ap, fmt);

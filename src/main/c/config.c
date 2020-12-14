@@ -68,7 +68,13 @@ void parse_legacy_config(struct string *jvm_options)
 #endif
 			if (jre_len > 0) {
 				p[jre_len] = '\0';
-				set_legacy_jre_path(p);
+				const struct string *jre_dir = string_copy(p);
+				if (file_exists(jre_dir->buffer)) {
+					set_legacy_jre_path(p);
+				} else {
+					debug("ImageJ.cfg points to invalid java: %s", p);
+				}
+				string_release(jre_dir);
 			}
 		}
 		else if (line == 3) {
@@ -182,13 +188,19 @@ void read_config(struct string *jvm_options)
 	const char *path = ij_path("ImageJ.cfg");
 
 	if (file_exists(path)) {
+		debug("read_config: reading ImageJ.cfg");
 		read_file_as_string(path, jvm_options);
-		if (is_modern_config(jvm_options->buffer))
+		if (is_modern_config(jvm_options->buffer)) {
+			debug("read_config: detected modern config");
 			parse_modern_config(jvm_options);
-		else
+		}
+		else {
+			debug("read_config: detected legacy config");
 			parse_legacy_config(jvm_options);
+		}
 	}
 	else {
+		debug("read_config: checking jvm.cfg");
 		path = ij_path("jvm.cfg");
 		if (file_exists(path))
 			read_file_as_string(path, jvm_options);

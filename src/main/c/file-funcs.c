@@ -33,8 +33,19 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <sys/stat.h>
+
+int file_is_newer(const char *path, const char *than)
+{
+	struct stat st1, st2;
+
+	if (stat(path, &st1))
+		return 0;
+	return stat(than, &st2) || st1.st_mtime > st2.st_mtime;
+}
+
 
 int find_file(struct string *search_root, int max_depth, const char *file, struct string *result)
 {
@@ -209,7 +220,18 @@ int is_absolute_path(const char *path)
 
 int file_exists(const char *path)
 {
-	return !access(path, R_OK);
+	const int rval = access(path, R_OK);
+	/*
+	 * Optional debugging, if necessary.
+	if (errno == EACCES) debug("file_exists failed for path %s: EACCES", path);
+	if (errno == ELOOP) debug("file_exists failed for path %s: ELOOP", path);
+	if (errno == ENAMETOOLONG) debug("file_exists failed for path %s: ENAMETOOLONG", path);
+	if (errno == ENOENT) debug("file_exists failed for path %s: ENOENT", path);
+	if (errno == ENOTDIR) debug("file_exists failed for path %s: ENOTDIR", path);
+	if (errno == EINVAL) debug("file_exists failed for path %s: EINVAL", path);
+	if (errno == ETXTBSY) debug("file_exists failed for path %s: ETXTBSY", path);
+	*/
+	return rval != -1;
 }
 
 int dir_exists(const char *path)
